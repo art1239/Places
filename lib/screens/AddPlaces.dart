@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:places/provider/PlacesProvider.dart';
 import 'package:places/widget/imageInput.dart';
+import 'package:provider/provider.dart';
 
 class AddPlaces extends StatefulWidget {
   static const route = '/addPlaces';
@@ -11,7 +13,25 @@ class AddPlaces extends StatefulWidget {
 }
 
 class _AddPlacesState extends State<AddPlaces> {
-  selectImage(File file) {}
+  TextEditingController _controller = TextEditingController();
+  File fileImage;
+  selectImage(File file) {
+    fileImage = file;
+  }
+
+  void saveChanges() {
+    if (_controller.text.isEmpty || fileImage == null) {
+      return;
+    }
+    Provider.of<Places>(context, listen: false).addPlaces(
+      title: _controller.text,
+      id: DateTime.now().toString(),
+      image: fileImage,
+      location: null,
+    );
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +48,7 @@ class _AddPlacesState extends State<AddPlaces> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
+                      controller: _controller,
                       style: TextStyle(),
                       decoration: InputDecoration(
                         labelText: 'Title',
@@ -57,7 +78,9 @@ class _AddPlacesState extends State<AddPlaces> {
                     ),
                   ],
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  saveChanges();
+                },
               ),
             )
           ],
